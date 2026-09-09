@@ -1,12 +1,12 @@
-FROM maven:3.9.11-eclipse-temurin-17 AS build
+FROM node:20-alpine
 WORKDIR /app
-COPY pom.xml .
-RUN mvn -q -DskipTests dependency:go-offline
-COPY src ./src
-RUN mvn -q -DskipTests package
-
-FROM eclipse-temurin:17-jre
-WORKDIR /app
-COPY --from=build /app/target/portfolio-1.0.0.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+COPY package.json ./
+COPY client/package.json client/package.json
+COPY server/package.json server/package.json
+RUN npm run build
+COPY client client
+COPY server server
+RUN npm run build
+ENV NODE_ENV=production
+EXPOSE 10000
+CMD ["npm","start"]
