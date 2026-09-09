@@ -8,4 +8,4 @@ services:
       - key: MONGODB_URI
         sync: false
       - key: CLIENT_ORIGIN
-        value: https://abishay-karlapudi-portfolio-mern.onrender.com
+        value: https://abishay-karlapudi-portfolio.onrender.com
