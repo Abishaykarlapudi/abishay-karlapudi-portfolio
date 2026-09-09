@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: nagaraju-portfolio
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: DB_URL
+        value: jdbc:mysql://portfolio-mysql:3306/portfolio?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - key: DB_USERNAME
+        value: portfolio
+      - key: DB_PASSWORD
+        sync: false
+
+  - type: pserv
+    name: portfolio-mysql
+    runtime: image
+    image:
+      url: docker.io/mysql:8.0
+    plan: starter
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+    envVars:
+      - key: MYSQL_DATABASE
+        value: portfolio
+      - key: MYSQL_USER
+        value: portfolio
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_ROOT_PASSWORD
+        sync: false
