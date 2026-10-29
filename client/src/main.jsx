@@ -2,27 +2,70 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 
-const skills = [
-  ['01', 'Programming', 'C, C++, Java and JavaScript, with a focus on problem solving and application development.', '90%'],
-  ['02', 'Web Development', 'HTML, CSS and JavaScript for responsive and interactive web experiences.', '86%'],
-  ['03', 'AWS Cloud', 'Working knowledge of EC2, S3, DynamoDB, CloudFront and CloudFormation.', '78%'],
-  ['04', 'Collaboration', 'Communication, teamwork, leadership and problem-solving through projects and ACE activities.', '88%']
+const skillCategories = [
+  {
+    num: '01',
+    category: 'Programming Languages',
+    description: 'Java (core), SQL',
+    tags: ['Java (Core)', 'SQL'],
+    percent: '90%'
+  },
+  {
+    num: '02',
+    category: 'Web Technologies',
+    description: 'HTML, CSS, JavaScript, React.js',
+    tags: ['React.js', 'JavaScript', 'HTML5', 'CSS3', 'Node.js', 'Express.js'],
+    percent: '88%'
+  },
+  {
+    num: '03',
+    category: 'Cloud Infrastructure',
+    description: 'AWS (EC2, S3, DynamoDB, CloudFront, CloudFormation)',
+    tags: ['AWS EC2', 'AWS S3', 'DynamoDB', 'CloudFront', 'CloudFormation'],
+    percent: '82%'
+  },
+  {
+    num: '04',
+    category: 'Tools & Platforms',
+    description: 'GitHub, VS Code, Postman, Render, Netlify',
+    tags: ['GitHub', 'VS Code', 'Postman', 'Render', 'Netlify'],
+    percent: '86%'
+  },
+  {
+    num: '05',
+    category: 'Soft Skills',
+    description: 'Communication, Teamwork, Leadership, Problem-solving',
+    tags: ['Leadership', 'Problem-solving', 'Teamwork', 'Communication'],
+    percent: '92%'
+  }
 ];
 
-const Icon = ({ children }) => <span className="feature-icon" aria-hidden="true">{children}</span>;
-
 const socialLinks = [
-  ['in', 'LinkedIn', 'https://www.linkedin.com/'],
-  ['GH', 'GitHub', 'https://github.com/Abishaykarlapudi'],
-  ['✉', 'Email', 'mailto:kabishay1@gmail.com']
+  { icon: 'in', label: 'LinkedIn', href: 'https://www.linkedin.com/' },
+  { icon: 'GH', label: 'GitHub', href: 'https://github.com/Abishaykarlapudi' },
+  { icon: '✉', label: 'Email', href: 'mailto:kabishay1@gmail.com' }
+];
+
+const navItems = [
+  { id: 'home', label: 'Home' },
+  { id: 'about', label: 'About' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'education', label: 'Education' },
+  { id: 'leadership', label: 'Leadership' },
+  { id: 'contact', label: 'Contact' }
 ];
 
 function App() {
+  const [activeSection, setActiveSection] = useState('home');
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const submit = async e => {
+  const submit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setStatus('Sending...');
     try {
       const r = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/contact`, {
@@ -31,110 +74,421 @@ function App() {
         body: JSON.stringify(form)
       });
       const d = await r.json();
-      if (!r.ok) throw Error(d.error || 'Unable to send message.');
-      setStatus(d.message);
+      if (!r.ok) throw new Error(d.error || 'Unable to send message.');
+      setStatus(d.message || 'Thank you! Your message has been sent successfully.');
       setForm({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
       setStatus(err.message || 'Unable to send message.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  return <div className="site-shell">
-    <header className="nav">
-      <a className="brand" href="#home" aria-label="Abishay Karlapudi home">
-        <img src="/ak-logo.svg" alt="AK Abishay Karlapudi logo" />
-      </a>
-      <nav aria-label="Primary navigation">
-        {['home', 'about', 'education', 'projects', 'skills', 'leadership', 'contact'].map(x =>
-          <a key={x} href={'#' + x} className={x === 'home' ? 'active' : ''}>{x[0].toUpperCase() + x.slice(1)}</a>
-        )}
-      </nav>
-      <a className="resume-btn" href="#contact"><span className="download-icon">↓</span> Resume</a>
-    </header>
+  return (
+    <div className="site-shell">
+      {/* Navigation Header */}
+      <header className="nav">
+        <a className="brand" href="#home" aria-label="Abishay Karlapudi home">
+          <img src="/ak-logo.svg" alt="AK Abishay Karlapudi logo" />
+        </a>
+        <nav aria-label="Primary navigation">
+          {navItems.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              onClick={() => setActiveSection(item.id)}
+              className={activeSection === item.id ? 'active' : ''}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+        <a className="resume-btn" href="#contact">
+          <span className="download-icon">↓</span> Get in Touch
+        </a>
+      </header>
 
-    <main>
-      <section id="home" className="hero">
-        <div className="hero-copy">
-          <p className="eyebrow hero-eyebrow">Hello, I’m</p>
-          <h1>Abishay <span>Karlapudi</span></h1>
-          <h2>Aspiring Software Developer</h2>
-          <p className="lead">Passionate about building real-world solutions, learning new technologies, and making a positive impact through technology.</p>
-          <div className="actions">
-            <a className="btn primary" href="#projects">View My Work <b>→</b></a>
-            <a className="btn secondary" href="#contact">Contact Me</a>
+      <main>
+        {/* Hero Section */}
+        <section id="home" className="hero">
+          <div className="hero-copy">
+            <p className="eyebrow hero-eyebrow">Hello, I’m</p>
+            <h1>
+              Abishay <span>Karlapudi</span>
+            </h1>
+            <h2>Full Stack Developer</h2>
+            <p className="lead">
+              Passionate Full Stack Developer with expertise in MERN stack, Java, and AWS Cloud. Dedicated to
+              building impactful, scalable web applications and high-performance software systems.
+            </p>
+            <div className="actions">
+              <a className="btn primary" href="#projects">
+                View My Projects <b>→</b>
+              </a>
+              <a className="btn secondary" href="#contact">
+                Contact Me
+              </a>
+            </div>
+            <div className="socials">
+              {socialLinks.map(({ icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={href.startsWith('http') ? '_blank' : undefined}
+                  rel="noreferrer"
+                  aria-label={label}
+                >
+                  {icon}
+                </a>
+              ))}
+            </div>
           </div>
-          <div className="socials">
-            {socialLinks.map(([icon, label, href]) => <a key={label} href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" aria-label={label}>{icon}</a>)}
+
+          <div className="hero-visual" aria-label="Profile image">
+            <div className="paint-frame">
+              <img src="/profile-photo.svg" alt="Abishay Karlapudi portrait" />
+            </div>
+            <div className="paint-edge edge-one" />
+            <div className="paint-edge edge-two" />
+            <div className="slogan">
+              Better
+              <br />
+              Code
+              <br />
+              Brighter
+              <br />
+              Tomorrow
+              <span>↗</span>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div className="hero-visual" aria-label="Profile image">
-          <div className="paint-frame"><img src="/profile-photo.svg" alt="Abishay by a scenic waterfront" /></div>
-          <div className="paint-edge edge-one" />
-          <div className="paint-edge edge-two" />
-          <div className="slogan">Better<br />Code<br />Brighter<br />Tomorrow<span>↗</span></div>
-        </div>
-      </section>
+        {/* Feature Highlights Strip */}
+        <section className="feature-strip" aria-label="Portfolio highlights">
+          <a href="#experience">
+            <span className="feature-icon" aria-hidden="true">💼</span>
+            <div>
+              <b>Experience</b>
+              <small>MERN Stack Intern<br />at Stickbook</small>
+            </div>
+          </a>
+          <a href="#projects">
+            <span className="feature-icon" aria-hidden="true">&lt;/&gt;</span>
+            <div>
+              <b>Projects</b>
+              <small>Doc-Time & Banking<br />System applications</small>
+            </div>
+          </a>
+          <a href="#skills">
+            <span className="feature-icon" aria-hidden="true">⚙</span>
+            <div>
+              <b>Skills</b>
+              <small>Java, MERN Stack<br />& AWS Cloud</small>
+            </div>
+          </a>
+          <a href="#leadership">
+            <span className="feature-icon" aria-hidden="true">♟</span>
+            <div>
+              <b>Leadership</b>
+              <small>Senior Body Member<br />ACE & Hackathon Lead</small>
+            </div>
+          </a>
+        </section>
 
-      <section className="feature-strip" aria-label="Portfolio highlights">
-        <a href="#education"><Icon>♢</Icon><div><b>Education</b><small>My academic journey<br />and achievements</small></div></a>
-        <a href="#projects"><Icon>&lt;/&gt;</Icon><div><b>Projects</b><small>Real-world projects<br />I have built</small></div></a>
-        <a href="#skills"><Icon>⚙</Icon><div><b>Skills</b><small>Technologies<br />I work with</small></div></a>
-        <a href="#leadership"><Icon>♟</Icon><div><b>ACE Leadership</b><small>My contributions<br />and leadership roles</small></div></a>
-      </section>
+        {/* 01 / About Me */}
+        <section id="about" className="section about-section">
+          <p className="eyebrow center">01 / ABOUT ME</p>
+          <h2 className="center-heading">Career Objective & Background</h2>
+          <p className="about-intro">
+            To obtain a challenging position as a Full Stack Developer where I can apply my MERN stack expertise,
+            Java skills, and cloud knowledge to contribute to impactful, scalable web applications.
+          </p>
+          <div className="about-grid">
+            <div>
+              <b>7.5</b>
+              <span>GPA / 10 (SRKREC)</span>
+            </div>
+            <div>
+              <b>50+</b>
+              <span>Teams Led in Hackathon</span>
+            </div>
+            <div>
+              <b>200+</b>
+              <span>Students Mentored</span>
+            </div>
+          </div>
+        </section>
 
-      <section id="about" className="section about-section">
-        <p className="eyebrow center">01 / ABOUT ME</p>
-        <h2 className="center-heading">Driven by Curiosity. Focused on Impact.</h2>
-        <p className="about-intro">I am a passionate software developer who enjoys solving real-world problems, learning new technologies, and creating meaningful solutions.</p>
-        <div className="about-grid">
-          <div><b>7.5</b><span>GPA / 10</span></div>
-          <div><b>2</b><span>Web Projects</span></div>
-          <div><b>200+</b><span>Students Reached</span></div>
-        </div>
-      </section>
+        {/* 02 / Experience */}
+        <section id="experience" className="section">
+          <p className="eyebrow">02 / EXPERIENCE</p>
+          <h2>Professional experience</h2>
+          <div className="experience-container">
+            <article className="experience-card featured">
+              <div className="project-top">
+                <span className="badge-highlight">INTERNSHIP</span>
+                <span>MAY 2026 — JUN 2026</span>
+              </div>
+              <div className="exp-header">
+                <h3>MERN Stack Development Intern</h3>
+                <h4 className="company-title">Stickbook</h4>
+              </div>
+              <ul className="exp-points">
+                <li>Completed a one-month internship focused on MERN Stack Full-Stack Development.</li>
+                <li>Learned the fundamentals of MongoDB, Express.js, React.js, and Node.js.</li>
+                <li>Gained knowledge of frontend development using React.js and backend development using Node.js and Express.js.</li>
+                <li>Learned how to connect web applications with MongoDB for data storage and retrieval.</li>
+                <li>Improved understanding of full-stack application development and client-server communication.</li>
+              </ul>
+              <div className="tags">
+                <span>MongoDB</span>
+                <span>Express.js</span>
+                <span>React.js</span>
+                <span>Node.js</span>
+                <span>REST APIs</span>
+                <span>Full Stack</span>
+              </div>
+            </article>
+          </div>
+        </section>
 
-      <section id="education" className="section">
-        <p className="eyebrow">02 / EDUCATION</p>
-        <h2>Academic foundation</h2>
-        <div className="projects">
-          <article className="project featured"><div className="project-top"><span>01</span><span>OCT 2022 — MAY 2026</span></div><h3>Sagi Ramakrishnam Raju Engineering College, Bhimavaram</h3><p>B.Tech. in Computer Science and Engineering</p><div className="tags"><span>GPA 7.5 / 10</span><span>Computer Science</span></div></article>
-          <article className="project"><div className="project-top"><span>02</span><span>OCT 2020 — MAY 2022</span></div><h3>Sri Chaitanya Junior College, Vijayawada</h3><p>M.P.C</p><div className="tags"><span>GPA 7.5 / 10</span></div></article>
-        </div>
-      </section>
+        {/* 03 / Projects */}
+        <section id="projects" className="section">
+          <p className="eyebrow">03 / PROJECTS</p>
+          <h2>Featured projects</h2>
+          <div className="projects">
+            {/* Project 1: Doc-Time */}
+            <article className="project featured">
+              <div className="project-top">
+                <span className="badge-highlight">JAVA & SPRING BOOT</span>
+                <a
+                  href="https://github.com/Abishaykarlapudi"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="project-github-link"
+                >
+                  GitHub ↗
+                </a>
+              </div>
+              <h3>Hospital Appointment Management System — ”Doc-Time”</h3>
+              <p className="project-tech-line">
+                <strong>Technologies:</strong> Java, Spring Boot, Spring Data JPA, MySQL, REST APIs
+              </p>
+              <ul className="project-points">
+                <li>Designed a hospital appointment management application for patients, doctors, and hospital administrators.</li>
+                <li>Developed backend components for managing appointments and retrieving appointment records.</li>
+                <li>Used entity classes, repositories, services, and REST controllers to organize application functionality.</li>
+                <li>Worked on relational database mapping and appointment management operations.</li>
+              </ul>
+              <div className="tags">
+                <span>Java</span>
+                <span>Spring Boot</span>
+                <span>Spring Data JPA</span>
+                <span>MySQL</span>
+                <span>REST APIs</span>
+              </div>
+            </article>
 
-      <section id="projects" className="section">
-        <p className="eyebrow">03 / PROJECTS</p>
-        <h2>Selected work</h2>
-        <div className="projects">
-          <article className="project featured"><div className="project-top"><span>01</span><span>WEB • TEAM PROJECT</span></div><h3>Tech Learn — Educational Web Platform</h3><p>Built a responsive educational website to help students grasp web development basics. Developed interactive tutorials and modular layouts with clean, beginner-friendly UI/UX while collaborating with a team of 4.</p><div className="tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>GitHub</span></div></article>
-          <article className="project"><div className="project-top"><span>02</span><span>WEB • FULL PROJECT</span></div><h3>Student Details Page — Freshers’ Data Collection Portal</h3><p>Designed and launched a web application for collecting structured data from incoming college students. Built the frontend with HTML, CSS and JavaScript and implemented PHP backend processing with MySQL storage, validation and a smooth submission flow.</p><div className="tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>PHP</span><span>MySQL</span></div></article>
-        </div>
-      </section>
+            {/* Project 2: Banking System */}
+            <article className="project">
+              <div className="project-top">
+                <span className="badge-highlight">CORE JAVA APPLICATION</span>
+                <a
+                  href="https://github.com/Abishaykarlapudi"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="project-github-link"
+                >
+                  GitHub ↗
+                </a>
+              </div>
+              <h3>Banking System – Console-Based Application</h3>
+              <p className="project-tech-line">
+                <strong>Technologies:</strong> Core Java, OOP Concepts, Scanner Class, Switch Statements, Loops, Conditional Statements
+              </p>
+              <ul className="project-points">
+                <li>Developed a console-based banking application using Java to perform basic banking operations.</li>
+                <li>Implemented account creation with customer details, including name, age, account type, and mobile number.</li>
+                <li>Developed deposit and withdrawal functionalities with minimum transaction amount and balance validation.</li>
+                <li>Implemented balance inquiry and optional balance display after transactions.</li>
+                <li>Used switch statements, do-while loops, and separate methods to manage menu-driven operations.</li>
+                <li>Applied conditional logic to handle invalid selections and insufficient balance scenarios.</li>
+              </ul>
+              <div className="tags">
+                <span>Core Java</span>
+                <span>OOP Concepts</span>
+                <span>Scanner Class</span>
+                <span>Control Flow</span>
+                <span>Data Validation</span>
+              </div>
+            </article>
+          </div>
+        </section>
 
-      <section id="skills" className="section">
-        <p className="eyebrow">04 / SKILLS</p>
-        <h2>Technical toolkit</h2>
-        <div className="skill-grid">{skills.map(s => <article key={s[0]}><span className="number">{s[0]}</span><h3>{s[1]}</h3><p>{s[2]}</p><div className="bar"><i style={{ width: s[3] }} /></div></article>)}</div>
-      </section>
+        {/* 04 / Skills */}
+        <section id="skills" className="section">
+          <p className="eyebrow">04 / SKILLS</p>
+          <h2>Technical toolkit & proficiencies</h2>
+          <div className="skill-grid">
+            {skillCategories.map((s) => (
+              <article key={s.num}>
+                <span className="number">{s.num}</span>
+                <h3>{s.category}</h3>
+                <p>{s.description}</p>
+                <div className="tags" style={{ marginTop: '15px' }}>
+                  {s.tags.map((t) => (
+                    <span key={t}>{t}</span>
+                  ))}
+                </div>
+                <div className="bar">
+                  <i style={{ width: s.percent }} />
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      <section id="leadership" className="section">
-        <p className="eyebrow">05 / LEADERSHIP</p>
-        <h2>Leadership & responsibility</h2>
-        <div className="cert-list">
-          <div><b>Senior Body Member — Association of Computer Engineers (ACE)</b><span>June 2025 — Present · Leading and mentoring junior members, organizing technical events and workshops, and coordinating strategic planning.</span></div>
-          <div><b>Executive Body Member — ACE</b><span>June 2024 — March 2025 · Co-organized 4+ tech events and coding workshops for 200+ students and coordinated logistics with a 24-member team.</span></div>
-        </div>
-      </section>
+        {/* 05 / Education */}
+        <section id="education" className="section">
+          <p className="eyebrow">05 / EDUCATION</p>
+          <h2>Academic foundation</h2>
+          <div className="education-container">
+            <article className="project featured">
+              <div className="project-top">
+                <span className="badge-highlight">BACHELOR OF TECHNOLOGY</span>
+                <span>OCT 2020 — MAY 2026</span>
+              </div>
+              <h3>Sagi Ramakrishnam Raju Engineering College, Bhimavaram</h3>
+              <p className="degree-title">B.Tech. in Computer Science and Engineering</p>
+              <div className="education-metrics">
+                <div className="metric-badge">
+                  <strong>GPA:</strong> 7.5 / 10
+                </div>
+                <div className="metric-badge">
+                  <strong>Specialization:</strong> Computer Science and Engineering
+                </div>
+              </div>
+              <div className="tags">
+                <span>Computer Science & Engineering</span>
+                <span>Data Structures</span>
+                <span>OOP</span>
+                <span>DBMS</span>
+                <span>Web Technologies</span>
+              </div>
+            </article>
+          </div>
+        </section>
 
-      <section id="contact" className="section contact">
-        <div><p className="eyebrow">06 / CONTACT</p><h2>Have a project or opportunity?</h2><p>I’m open to opportunities where I can apply Java, problem solving and full-stack development skills.</p><div className="contact-info"><span>✉ <a href="mailto:kabishay1@gmail.com">kabishay1@gmail.com</a></span><span>☎ <a href="tel:+918309617699">+91 8309617699</a></span><span>📍 Andhra Pradesh, India</span></div></div>
-        <form onSubmit={submit}><div className="row"><label>Name<input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required /></label><label>Email<input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required /></label></div><label>Subject<input value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} required /></label><label>Message<textarea rows="5" value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required /></label><button className="btn primary" type="submit">Send message ↗</button>{status && <p className="success">{status}</p>}</form>
-      </section>
-    </main>
+        {/* 06 / Leadership & Activities */}
+        <section id="leadership" className="section">
+          <p className="eyebrow">06 / LEADERSHIP & EXTRACURRICULAR</p>
+          <h2>Leadership & activities</h2>
+          <div className="cert-list">
+            <div className="leadership-card">
+              <div className="leadership-header">
+                <div>
+                  <h3>Senior Body Member (SBM) – Association of Computer Engineers (ACE)</h3>
+                  <span className="org-sub">SRKREC · Aug 2025 — June 2026</span>
+                </div>
+              </div>
+              <ul className="project-points" style={{ marginTop: '15px' }}>
+                <li>Co-organized more than four technical events and coding workshops attended by over 200 students.</li>
+                <li>Coordinated event logistics, technical arrangements, and speaker-related activities with a team of 24 members.</li>
+                <li>Led the organizing team for the national-level hackathon “Pajwalen,” involving more than 50 teams.</li>
+              </ul>
+              <div className="tags">
+                <span>Event Leadership</span>
+                <span>Team Coordination</span>
+                <span>Hackathon Organizer</span>
+                <span>Workshop Host</span>
+              </div>
+            </div>
+          </div>
+        </section>
 
-    <footer><span>© 2026 Abishay Karlapudi</span><span>Built with React + Express + MongoDB</span></footer>
-  </div>;
+        {/* 07 / Contact */}
+        <section id="contact" className="section contact">
+          <div>
+            <p className="eyebrow">07 / CONTACT</p>
+            <h2>Have a project or opportunity?</h2>
+            <p>
+              I am open to full-time roles, internships, and opportunities where I can apply my MERN stack, Java,
+              and cloud expertise to build impactful applications.
+            </p>
+            <div className="contact-info">
+              <span>
+                ✉ <a href="mailto:kabishay1@gmail.com">kabishay1@gmail.com</a>
+              </span>
+              <span>
+                ☎ <a href="tel:+918309617699">+91 8309617699</a>
+              </span>
+              <span>
+                📍 6-133/3, Vidhyanagar, Guntur, Andhra Pradesh – 522007
+              </span>
+              <span>
+                💻 <a href="https://github.com/Abishaykarlapudi" target="_blank" rel="noreferrer">github.com/Abishaykarlapudi</a>
+              </span>
+              <span>
+                🔗 <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn Profile</a>
+              </span>
+            </div>
+          </div>
+
+          <form onSubmit={submit}>
+            <div className="row">
+              <label>
+                Name
+                <input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="Your Name"
+                  required
+                />
+              </label>
+              <label>
+                Email
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="Your Email"
+                  required
+                />
+              </label>
+            </div>
+            <label>
+              Subject
+              <input
+                value={form.subject}
+                onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                placeholder="Subject of your message"
+                required
+              />
+            </label>
+            <label>
+              Message
+              <textarea
+                rows="5"
+                value={form.message}
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
+                placeholder="Write your message here..."
+                required
+              />
+            </label>
+            <button className="btn primary" type="submit" disabled={loading}>
+              {loading ? 'Sending...' : 'Send message ↗'}
+            </button>
+            {status && <p className="success">{status}</p>}
+          </form>
+        </section>
+      </main>
+
+      <footer>
+        <span>© 2026 Abishay Karlapudi · Full Stack Developer</span>
+        <span>Built with React + Node.js/Express + MongoDB</span>
+      </footer>
+    </div>
+  );
 }
 
 createRoot(document.getElementById('root')).render(<App />);
