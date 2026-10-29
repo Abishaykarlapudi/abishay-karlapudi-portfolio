@@ -59,6 +59,7 @@ const navItems = [
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
+  const [heroTab, setHeroTab] = useState('code');
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
@@ -144,21 +145,105 @@ function App() {
             </div>
           </div>
 
-          <div className="hero-visual" aria-label="Profile image">
-            <div className="paint-frame">
-              <img src="/profile-photo.svg" alt="Abishay Karlapudi portrait" />
+          <div className="hero-visual" aria-label="Interactive developer showcase">
+            {/* Floating tech badges */}
+            <div className="tech-badge-float badge-top-left">
+              <span className="badge-icon">☕</span>
+              <div>
+                <strong>Java &amp; Spring Boot</strong>
+                <small>Doc-Time &amp; Banking</small>
+              </div>
             </div>
-            <div className="paint-edge edge-one" />
-            <div className="paint-edge edge-two" />
-            <div className="slogan">
-              Better
-              <br />
-              Code
-              <br />
-              Brighter
-              <br />
-              Tomorrow
-              <span>↗</span>
+
+            <div className="tech-badge-float badge-bottom-right">
+              <span className="badge-icon">⚛️</span>
+              <div>
+                <strong>MERN Stack</strong>
+                <small>Stickbook Internship</small>
+              </div>
+            </div>
+
+            <div className="tech-badge-float badge-top-right">
+              <span className="badge-icon">☁️</span>
+              <div>
+                <strong>AWS Cloud</strong>
+                <small>EC2 · S3 · DynamoDB</small>
+              </div>
+            </div>
+
+            {/* Code / Terminal Window */}
+            <div className="code-card">
+              <div className="code-header">
+                <div className="window-dots">
+                  <span className="dot red" />
+                  <span className="dot yellow" />
+                  <span className="dot green" />
+                </div>
+                <div className="window-tabs">
+                  <button
+                    type="button"
+                    className={`tab-btn ${heroTab === 'code' ? 'active' : ''}`}
+                    onClick={() => setHeroTab('code')}
+                  >
+                    <span className="file-icon">⚡</span> developer.ts
+                  </button>
+                  <button
+                    type="button"
+                    className={`tab-btn ${heroTab === 'terminal' ? 'active' : ''}`}
+                    onClick={() => setHeroTab('terminal')}
+                  >
+                    <span className="file-icon">&gt;_</span> terminal
+                  </button>
+                </div>
+                <div className="window-status">
+                  <span className="status-indicator" /> Active
+                </div>
+              </div>
+
+              <div className="code-body">
+                {heroTab === 'code' ? (
+                  <pre className="code-content">
+                    <code>
+                      <span className="tok-kw">const</span> <span className="tok-var">developer</span> = &#123;{'\n'}
+                      {'  '}<span className="tok-key">name</span>: <span className="tok-str">"Abishay Karlapudi"</span>,{'\n'}
+                      {'  '}<span className="tok-key">role</span>: <span className="tok-str">"Full Stack Developer"</span>,{'\n'}
+                      {'  '}<span className="tok-key">education</span>: &#123;{'\n'}
+                      {'    '}<span className="tok-key">college</span>: <span className="tok-str">"SRKREC Bhimavaram"</span>,{'\n'}
+                      {'    '}<span className="tok-key">degree</span>: <span className="tok-str">"B.Tech in CSE"</span>,{'\n'}
+                      {'    '}<span className="tok-key">gpa</span>: <span className="tok-num">7.5</span>{'\n'}
+                      {'  '}&#125;,{'\n'}
+                      {'  '}<span className="tok-key">skills</span>: &#123;{'\n'}
+                      {'    '}<span className="tok-key">languages</span>: [<span className="tok-str">"Java (core)"</span>, <span className="tok-str">"SQL"</span>],{'\n'}
+                      {'    '}<span className="tok-key">web</span>: [<span className="tok-str">"React.js"</span>, <span className="tok-str">"Node.js"</span>, <span className="tok-str">"HTML/CSS"</span>],{'\n'}
+                      {'    '}<span className="tok-key">cloud</span>: [<span className="tok-str">"AWS EC2"</span>, <span className="tok-str">"S3"</span>, <span className="tok-str">"DynamoDB"</span>]{'\n'}
+                      {'  '}&#125;,{'\n'}
+                      {'  '}<span className="tok-key">internship</span>: <span className="tok-str">"Stickbook (MERN Intern)"</span>,{'\n'}
+                      {'  '}<span className="tok-key">leadership</span>: <span className="tok-str">"ACE Senior Body Member"</span>,{'\n'}
+                      {'  '}<span className="tok-key">status</span>: <span className="tok-str">"Open for Opportunities 🚀"</span>{'\n'}
+                      &#125;;
+                    </code>
+                  </pre>
+                ) : (
+                  <div className="terminal-content">
+                    <p className="term-line"><span className="term-prompt">$</span> curl -s https://abishay.dev/status</p>
+                    <p className="term-output term-success">&#10003; 200 OK — Developer profile loaded</p>
+                    <p className="term-line"><span className="term-prompt">$</span> node -v &amp;&amp; java --version</p>
+                    <p className="term-output">v20.x · OpenJDK 17 Runtime Environment</p>
+                    <p className="term-line"><span className="term-prompt">$</span> git log -1 --oneline</p>
+                    <p className="term-output term-info">"Passionate Full Stack Developer creating impactful web apps"</p>
+                    <p className="term-line"><span className="term-prompt">$</span> npm test</p>
+                    <p className="term-output term-success">&#10003; 100% tests passing. Ready to deploy.</p>
+                    <p className="term-line term-cursor"><span className="term-prompt">$</span> <span className="cursor-blink">█</span></p>
+                  </div>
+                )}
+              </div>
+
+              <div className="code-footer">
+                <span className="footer-item"><span className="icon-branch">⑂</span> main*</span>
+                <span className="footer-item">UTF-8</span>
+                <span className="footer-item">TypeScript React</span>
+                <span className="footer-item status-green">&#10003; Prettier</span>
+              </div>
             </div>
           </div>
         </section>
